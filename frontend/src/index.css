@@ -1,0 +1,1412 @@
+/* ============================================================
+   IMPORTS
+   We use two Google Fonts:
+   - "Inter" for all UI text (clean, readable at small sizes)
+   - "Playfair Display" for the brand name only (elegant contrast)
+============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap');
+
+/* ============================================================
+   CSS VARIABLES (DESIGN TOKENS)
+   All colours, spacing, shadows, and radii are defined here.
+   Changing one variable updates every component that uses it.
+   We define both a light theme (default) and a dark theme.
+============================================================ */
+:root {
+  /* Brand colours */
+  --brand-primary:      #2563eb;
+  --brand-primary-dark: #1d4ed8;
+  --brand-primary-soft: #eff6ff;
+
+  /* Neutral palette */
+  --gray-50:  #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+
+  /* Semantic colours */
+  --color-success:      #22c55e;
+  --color-success-soft: #f0fdf4;
+  --color-warning:      #f59e0b;
+  --color-warning-soft: #fffbeb;
+  --color-danger:       #ef4444;
+  --color-danger-soft:  #fef2f2;
+  --color-info:         #3b82f6;
+  --color-info-soft:    #eff6ff;
+
+  /* Surface colours (light mode) */
+  --bg-page:      #f1f5f9;
+  --bg-surface:   #ffffff;
+  --bg-surface-2: #f8fafc;
+  --bg-sidebar:   #0f172a;
+
+  /* Text colours */
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --text-inverse:   #ffffff;
+  --text-sidebar:   #cbd5e1;
+
+  /* Border */
+  --border-color:  #e2e8f0;
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+
+  /* Sidebar dimensions */
+  --sidebar-width: 240px;
+
+  /* Typography */
+  --font-sans:  'Inter', system-ui, sans-serif;
+  --font-brand: 'Playfair Display', serif;
+
+  /* Transitions */
+  --transition: 150ms ease;
+}
+
+/* ── Dark mode overrides ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page:      #0f172a;
+    --bg-surface:   #1e293b;
+    --bg-surface-2: #0f172a;
+    --bg-sidebar:   #020617;
+
+    --text-primary:   #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted:     #475569;
+
+    --border-color: #334155;
+
+    --brand-primary-soft: #1e3a5f;
+    --color-success-soft: #052e16;
+    --color-danger-soft:  #450a0a;
+    --color-info-soft:    #0c1a3a;
+  }
+}
+
+/* ============================================================
+   RESET & BASE
+============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--brand-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ============================================================
+   APP SHELL — sidebar + main content layout
+   The sidebar is fixed on the left.
+   The main content scrolls independently on the right.
+============================================================ */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 2rem 2.5rem;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 100;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Brand / logo area */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.brand-text {
+  font-family: var(--font-brand);
+  font-size: 1.3rem;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+/* User info block */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 0.5rem;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.72rem;
+  color: var(--gray-400);
+  text-transform: capitalize;
+  margin-top: 1px;
+}
+
+/* Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  padding: 1rem 0.5rem 0.4rem;
+}
+
+/* Each nav item is a button */
+.nav-link {
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-sidebar);
+  transition: background var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link:hover {
+  background: rgba(255,255,255,0.07);
+  color: #ffffff;
+}
+
+/* Active state — highlighted nav item */
+.nav-active {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* Logout button at the very bottom */
+.sidebar-footer {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.btn-logout {
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  color: var(--gray-400);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--transition), color var(--transition);
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+/* ============================================================
+   PAGE LAYOUT
+============================================================ */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Page heading row — title on left, action button on right */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+
+/* Primary — solid blue */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 1.25rem;
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1.5px solid var(--brand-primary);
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-primary-dark);
+  border-color: var(--brand-primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Secondary — outlined */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 1.1rem;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1.5px solid var(--border-color);
+  transition: background var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--gray-100);
+  border-color: var(--gray-300);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Link-style button — no background */
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--brand-primary);
+  font-size: 0.825rem;
+  font-weight: 500;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-link:hover {
+  background: var(--brand-primary-soft);
+}
+
+/* Danger variant of link button */
+.btn-danger {
+  color: var(--color-danger) !important;
+}
+
+.btn-danger:hover {
+  background: var(--color-danger-soft) !important;
+}
+
+/* Back button */
+.back-btn {
+  margin-bottom: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+/* ============================================================
+   FORM ELEMENTS
+============================================================ */
+.form-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  max-width: 760px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+/* Two inputs side by side */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* All text inputs, selects, textareas share the same base style */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.2rem;
+}
+
+/* Standalone search and filter inputs above tables */
+.search-input {
+  max-width: 320px;
+}
+
+.filter-select {
+  max-width: 200px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Score inputs inside the grade entry table — narrower */
+.score-input {
+  width: 72px;
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+}
+
+/* Remarks input inside grade table — wider */
+.remarks-input {
+  width: 160px;
+  padding: 0.4rem 0.6rem;
+}
+
+/* Section titles within longer forms */
+.form-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Button row at the bottom of a form */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ============================================================
+   AUTH PAGE (Login)
+============================================================ */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  padding: 1.5rem;
+}
+
+.auth-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-card h1 {
+  font-family: var(--font-brand);
+  font-size: 1.5rem;
+  text-align: center;
+  color: var(--brand-primary);
+  margin-bottom: 0.25rem;
+}
+
+.auth-card h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.auth-card .form-group {
+  margin-bottom: 1.1rem;
+}
+
+.auth-card .btn-primary {
+  width: 100%;
+  justify-content: center;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   METRIC CARDS
+   Used on dashboards to show summary numbers.
+============================================================ */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.metric-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+/* ============================================================
+   CHART CARDS
+   White card wrapper used around recharts graphs.
+============================================================ */
+.chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  flex: 1;
+  min-width: 280px;
+}
+
+.chart-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+/* Two charts side by side */
+.charts-row {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   DATA TABLES
+============================================================ */
+.table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  overflow-x: auto; /* allows horizontal scroll on small screens */
+}
+
+/* Row inside a table card with title + button */
+.table-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table thead {
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 0.8rem 0.85rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Subtle hover on table rows */
+.data-table tbody tr:hover {
+  background: var(--bg-surface-2);
+}
+
+/* Action buttons column */
+.action-cell {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* ============================================================
+   GRADE ENTRY TABLE
+============================================================ */
+.grade-entry {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.grade-entry-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.weight-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.grade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 800px;
+}
+
+.grade-table th {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.grade-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.grade-table tbody tr:hover {
+  background: var(--bg-surface-2);
+}
+
+.total-cell {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.grade-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ============================================================
+   BADGES & STATUS PILLS
+============================================================ */
+
+/* Letter grade coloured pill */
+.grade-badge,
+.grade-pill {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* Individual grade colours */
+.grade-A  { background: #dcfce7; color: #15803d; }
+.grade-B  { background: #dbeafe; color: #1d4ed8; }
+.grade-C  { background: #fef3c7; color: #92400e; }
+.grade-D  { background: #ffedd5; color: #c2410c; }
+.grade-F  { background: #fee2e2; color: #b91c1c; }
+
+/* Status badges (enrolled / completed / dropped / active / suspended) */
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-enrolled   { background: #dbeafe; color: #1d4ed8; }
+.status-completed  { background: #dcfce7; color: #15803d; }
+.status-dropped    { background: #fee2e2; color: #b91c1c; }
+.status-active     { background: #dcfce7; color: #15803d; }
+.status-suspended  { background: #ffedd5; color: #c2410c; }
+.status-graduated  { background: #e0e7ff; color: #3730a3; }
+
+/* Course code pill */
+.course-code-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary);
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================================
+   RANKING BADGES (Top students table)
+============================================================ */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-right: 6px;
+  background: var(--gray-100);
+  color: var(--text-secondary);
+}
+
+/* Gold, silver, bronze for top 3 */
+.rank-1 { background: #fef9c3; color: #854d0e; }
+.rank-2 { background: #f1f5f9; color: #475569; }
+.rank-3 { background: #ffedd5; color: #c2410c; }
+
+/* ============================================================
+   GPA DISPLAY
+============================================================ */
+.gpa-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+/* Large CGPA card used on transcript and student detail */
+.cgpa-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: var(--brand-primary-soft);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: var(--border-radius-lg);
+  padding: 0.6rem 1.25rem;
+}
+
+.cgpa-badge span:first-child {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-primary);
+}
+
+.cgpa-badge strong {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+.cgpa-badge span:last-child {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Standalone CGPA card used in student detail header */
+.cgpa-card {
+  background: var(--brand-primary-soft);
+  border: 1px solid rgba(37,99,235,0.2);
+  border-radius: var(--border-radius-lg);
+  padding: 1.25rem 1.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.cgpa-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brand-primary);
+}
+
+.cgpa-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+  line-height: 1;
+}
+
+.cgpa-max {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   DETAIL PAGE LAYOUT
+============================================================ */
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.detail-meta {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+  align-items: flex-start;
+}
+
+/* Student avatar + name block */
+.student-avatar-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+/* Key-value grid on the profile tab */
+.detail-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.25rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.field-value {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* ============================================================
+   TABS
+============================================================ */
+.tab-bar {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px; /* sits on top of the tab-bar border */
+  transition: color var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+
+.tab-btn:hover {
+  color: var(--brand-primary);
+}
+
+.tab-active {
+  color: var(--brand-primary) !important;
+  border-bottom-color: var(--brand-primary) !important;
+  font-weight: 600;
+}
+
+/* ============================================================
+   TRANSCRIPT — semester grouping
+============================================================ */
+.semester-block {
+  margin-bottom: 2rem;
+}
+
+.semester-heading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.75rem;
+}
+
+/* ============================================================
+   STUDENT SEARCH RESULTS DROPDOWN (EnrollStudent page)
+============================================================ */
+.student-search-results {
+  list-style: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: var(--brand-primary-soft);
+}
+
+.result-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.result-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Selected student confirmation card */
+.selected-student-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-success-soft);
+  border: 1px solid var(--color-success);
+  border-radius: var(--border-radius);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.selected-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.selected-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   DEPARTMENT REPORT LAYOUT
+============================================================ */
+.report-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.department-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.dept-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  border-radius: var(--border-radius);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  text-align: left;
+}
+
+.dept-btn:hover {
+  background: var(--brand-primary-soft);
+  border-color: var(--brand-primary);
+}
+
+.dept-btn-active {
+  background: var(--brand-primary) !important;
+  border-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+}
+
+.dept-btn-active .dept-gpa {
+  color: rgba(255,255,255,0.8) !important;
+}
+
+.dept-name {
+  font-weight: 500;
+}
+
+.dept-gpa {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.department-detail {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* ============================================================
+   PAGINATION
+============================================================ */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.page-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   FEEDBACK MESSAGES
+============================================================ */
+.error-message {
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.success-message {
+  background: var(--color-success-soft);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  color: var(--color-success);
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Inline toast shown after saving grades */
+.success-toast {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-success);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   LOADING & EMPTY STATES
+============================================================ */
+.loading-text {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+============================================================ */
+.text-success { color: var(--color-success); font-weight: 600; }
+.text-danger  { color: var(--color-danger);  font-weight: 600; }
+.text-muted   { color: var(--text-muted); }
+.text-center  { text-align: center; }
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   Below 768px (tablets/mobile):
+   - Sidebar collapses
+   - Main content fills full width
+   - Grids become single column
+============================================================ */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 1.25rem;
+  }
+
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .charts-row {
+    flex-direction: column;
+  }
+
+  .detail-header {
+    flex-direction: column;
+  }
+
+  .detail-actions {
+    margin-left: 0;
+  }
+
+  .report-layout {
+    flex-direction: column;
+  }
+
+  .department-list {
+    width: 100%;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}
