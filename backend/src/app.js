@@ -5,9 +5,6 @@ require('dotenv').config(); // must be first — loads .env before anything else
 const { runMigrations } = require('./config/migrate');
 runMigrations().catch(console.error);
 
-const express = require('express');
-// ... rest of your app.js stays the same
-
 const express      = require('express');
 const helmet       = require('helmet');
 const cors         = require('cors');
