@@ -7,17 +7,21 @@ const runMigrations = async () => {
   try {
     console.log('Running database migrations...');
 
-    const migrationPath = path.join(__dirname, '../../migrations/001_initial_schema.sql');
+    const migrationPath = path.join(
+      __dirname, '../../migrations/001_initial_schema.sql'
+    );
     const sql = fs.readFileSync(migrationPath, 'utf8');
 
     await client.query(sql);
     console.log('Migrations completed successfully.');
   } catch (err) {
-    // If tables already exist PostgreSQL throws an error — that is fine
-    // The IF NOT EXISTS in the schema handles this gracefully
+    // Code 42P07 means "table already exists" — safe to ignore
+    // because our schema uses IF NOT EXISTS
     if (err.code === '42P07') {
       console.log('Tables already exist — skipping migration.');
     } else {
+      // Log but do not crash the server — the app can still
+      // serve requests even if migrations fail on a re-deploy
       console.error('Migration error:', err.message);
     }
   } finally {
