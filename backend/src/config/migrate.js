@@ -2,6 +2,13 @@ const { pool } = require('./db');
 const fs       = require('fs');
 const path     = require('path');
 
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
 const runMigrations = async () => {
   const client = await pool.connect();
   try {

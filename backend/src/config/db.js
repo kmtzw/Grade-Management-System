@@ -4,11 +4,10 @@ const { Pool } = require('pg');
 // Instead of opening and closing a connection for every query,
 // the pool keeps several connections alive and hands them out as needed.
 const pool = new Pool({
-  host:     process.env.DB_HOST,
-  port:     process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME,
-  user:     process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
   max: 20,                      // max 20 simultaneous connections
   idleTimeoutMillis: 30000,     // close idle connections after 30s
   connectionTimeoutMillis: 2000 // error if connection takes > 2s
