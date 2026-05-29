@@ -4,7 +4,7 @@ import axios from 'axios';
 // Every request automatically goes to the right base URL,
 // and every request automatically includes the auth token.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
 });
 
 // REQUEST INTERCEPTOR

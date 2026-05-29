@@ -1,11 +1,14 @@
 {
-  "name": "backend",
+  "name": "grade-management-system-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js"
+  },
+   "engines": {
+    "node": ">=20.0.0"
   },
   "keywords": [],
   "author": "",

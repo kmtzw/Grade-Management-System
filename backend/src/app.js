@@ -1,5 +1,13 @@
 require('dotenv').config(); // must be first — loads .env before anything else reads process.env
 
+// Run database migrations on startup
+// This creates tables if they don't exist yet
+const { runMigrations } = require('./config/migrate');
+runMigrations().catch(console.error);
+
+const express = require('express');
+// ... rest of your app.js stays the same
+
 const express      = require('express');
 const helmet       = require('helmet');
 const cors         = require('cors');
@@ -23,10 +31,24 @@ const app = express();
 app.use(helmet());
 
 // cors() allows requests from your frontend URL only
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean); // removes any undefined values
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true
 }));
+
 
 // --- Request Parsing ---
 app.use(express.json()); // parses JSON request bodies into req.body

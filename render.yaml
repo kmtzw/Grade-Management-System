@@ -1,0 +1,63 @@
+databases:
+  # ── PostgreSQL Database ─────────────────────────────────
+  - name: grade-management-db
+    databaseName: gradedb
+    user: postgres
+    plan: free
+    region: oregon
+
+services:
+  # ── Backend API ─────────────────────────────────────────
+  - type: web
+    name: grade-management-backend
+    plan: free
+    region: oregon
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: grade-management-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: grade-management-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: grade-management-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: grade-management-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: grade-management-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://grade-management-frontend.onrender.com
+
+  # ── Frontend Static Site ─────────────────────────────────
+  - type: web
+    name: grade-management-frontend
+    plan: free
+    region: oregon
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://grade-management-backend.onrender.com/api
+    routes:
+      # This is the React Router fix — all routes serve index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
