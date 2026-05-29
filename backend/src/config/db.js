@@ -1,31 +1,44 @@
 const { Pool } = require('pg');
 
-// Render's PostgreSQL requires SSL in production.
-// In development (local) we don't need SSL so we check NODE_ENV.
 const isProduction = process.env.NODE_ENV === 'production';
 
-const pool = new Pool({
-  host:     process.env.DB_HOST,
-  port:     process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME,
-  user:     process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-
-  // Enable SSL on Render but not locally.
-  // rejectUnauthorized: false tells Node to accept Render's
-  // self-signed certificate without needing the root CA installed.
-  ...(isProduction && {
-    ssl: {
-      rejectUnauthorized: false
+// On Render, DATABASE_URL is the most reliable connection method.
+// Locally, we use individual DB_* variables from .env.
+const poolConfig = isProduction && process.env.DATABASE_URL
+  ? {
+      // Use the full connection string Render provides.
+      // This already has the correct host, port, user, password and database.
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        // Render uses self-signed certificates so we disable
+        // certificate verification. This is safe for Render's
+        // managed database environment.
+        rejectUnauthorized: false
+      },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000, // longer timeout for cloud DB
     }
-  })
+  : {
+      // Local development — individual variables, no SSL needed
+      host:     process.env.DB_HOST     || 'localhost',
+      port:     parseInt(process.env.DB_PORT) || 5432,
+      database: process.env.DB_NAME     || 'gradedb',
+      user:     process.env.DB_USER     || 'postgres',
+      password: process.env.DB_PASSWORD,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    };
+
+const pool = new Pool(poolConfig);
+
+pool.on('connect', () => {
+  console.log('Database connection established successfully.');
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected database pool error:', err);
+  console.error('Unexpected database pool error:', err.message);
 });
 
 const query = (text, params) => pool.query(text, params);
