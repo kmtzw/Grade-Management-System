@@ -1,10 +1,13 @@
 import axios from 'axios';
 
-// Creates a pre-configured axios instance.
-// Every request automatically goes to the right base URL,
-// and every request automatically includes the auth token.
+// Vite replaces import.meta.env.VITE_API_URL at build time.
+// The hardcoded fallback ensures the app works on Render even if
+// the env variable is not set during the build.
+const API_URL = import.meta.env.VITE_API_URL
+  || 'https://grade-management-system-backend-mukm.onrender.com/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: API_URL,
 });
 
 // REQUEST INTERCEPTOR
