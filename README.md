@@ -1,13 +1,6 @@
 # GradeMS — University Grade Management System
 
-![GradeMS Banner](https://img.shields.io/badge/GradeMS-University%20Grade%20Management-2563eb?style=for-the-badge)
-![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=flat-square&logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Express](https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-
-A full-stack university grade management system built with React, Node.js, Express and PostgreSQL. The system supports three user roles — Admin, Lecturer and Student — each with their own dashboard, permissions and workflows.
+A full-stack university grade management system built with React, Node.js, Express and PostgreSQL. The system supports three user roles: Admin, Lecturer and Student, each with their own dashboard, permissions and workflows.
 
 **Live Demo:** [https://grade-management-system-frontend.onrender.com](https://grade-management-system-frontend.onrender.com)
 
